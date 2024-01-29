@@ -1,6 +1,7 @@
 # HeartDisease-Modelling-with-Multivariate-Statistics
 
-![Uploading image.png…]()
+![image](https://github.com/ilkedercan/HeartDisease-Modelling-with-Multivariate-Statistics/assets/109766684/6da5a8ef-ed28-4e64-9960-34d45128f37d)
+
 
 
 ## Veri Seti Hikayesi
