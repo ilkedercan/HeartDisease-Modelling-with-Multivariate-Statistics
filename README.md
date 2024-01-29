@@ -4,6 +4,19 @@
 
 Çıktıları görüntülemek için yöntemlerin linklerini ziyaret edebilirsiniz.
 
+Önişleme & Keşifsel Veri Analizi çıktısı: https://rpubs.com/ilke/heartEDA
+
+## Analiz Yöntemleri
+
+Proje aşağıdaki analiz yöntemlerini içermektedir:
+
+- Manova https://rpubs.com/ilke/manova
+- Temel Bileşenler Analizi https://rpubs.com/ilke/PCA
+- Faktör Analizi https://rpubs.com/ilke/faktoranalizi
+- Diskriminant Analizi https://rpubs.com/ilke/diskriminant
+- Lojistik Regresyon https://rpubs.com/ilke/lojistikregresyon
+- Kümeleme (K-Means ve Hiyerarşik Kümeleme) https://rpubs.com/ilke/kume
+
 ## Veri Seti Hikayesi
 
 Yaş: Hastanın yaşı (yıl)
@@ -31,15 +44,4 @@ ST_Slope: zirve egzersiz ST segmentinin eğimi (Up: yukarı eğimli, Down: düz,
 
 HeartDisease: çıktı sınıfı (1: kalp hastalığı, 0: Normal)
 
-Önişleme & Keşifsel Veri Analizi çıktısı: https://rpubs.com/ilke/heartEDA
 
-## Analiz Yöntemleri
-
-Proje aşağıdaki analiz yöntemlerini içermektedir:
-
-- Manova https://rpubs.com/ilke/manova
-- Temel Bileşenler Analizi https://rpubs.com/ilke/PCA
-- Faktör Analizi https://rpubs.com/ilke/faktoranalizi
-- Diskriminant Analizi https://rpubs.com/ilke/diskriminant
-- Lojistik Regresyon https://rpubs.com/ilke/lojistikregresyon
-- Kümeleme (K-Means ve Hiyerarşik Kümeleme) https://rpubs.com/ilke/kume
