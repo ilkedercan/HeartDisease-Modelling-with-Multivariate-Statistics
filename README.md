@@ -37,9 +37,9 @@ HeartDisease: çıktı sınıfı (1: kalp hastalığı, 0: Normal)
 
 Proje aşağıdaki analiz yöntemlerini içermektedir:
 
-- Manova
-- Temel Bileşenler Analizi
-- Faktör Analizi
-- Diskriminant Analizi
-- Lojistik Regresyon
-- Kümeleme (K-Means ve Hiyerarşik Kümeleme)
+- Manova https://rpubs.com/ilke/manova
+- Temel Bileşenler Analizi https://rpubs.com/ilke/PCA
+- Faktör Analizi https://rpubs.com/ilke/faktoranalizi
+- Diskriminant Analizi https://rpubs.com/ilke/diskriminant
+- Lojistik Regresyon https://rpubs.com/ilke/lojistikregresyon
+- Kümeleme (K-Means ve Hiyerarşik Kümeleme) https://rpubs.com/ilke/kume
