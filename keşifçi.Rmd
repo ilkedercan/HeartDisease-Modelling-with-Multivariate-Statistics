@@ -1,0 +1,462 @@
+---
+title: "Heart data"
+author: "ilke"
+date: "2024-01-07"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: lumen
+---
+---
+
+**Veri setine erişmek için [Heart Disease](https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction) sitesini ziyaret edebilirsiniz.**
+
+## **1.Veri Seti Hikayesi/Tanımı ve Amaçlar**
+
+<div>
+  <p>
+    
+    Yaş: Hastanın yaşı (yıl)
+
+    Cinsiyet: Hastanın cinsiyeti (E: Erkek, K: Kadın)
+
+    ChestPainType: göğüs ağrısı tipi (TA: Tipik Angina, ATA: Atipik Angina, NAP: Anginal Olmayan Ağrı, ASY: Asemptomatik)
+
+    DinlenmeBP: dinlenme kan basıncı (mm Hg)
+
+    Cholesterol: serum kolesterolü (mm/dl)
+
+    FastingBS: açlık kan şekeri (1: FastingBS > 120 mg/dl ise, 0: aksi takdirde)
+
+    RestingECG: istirahat elektrokardiyogram sonuçları (Normal: Normal, ST: ST-T dalgası anormalliği (T dalgası inversiyonları ve/veya ST elevasyonu veya > 0,05 mV depresyonu), LVH: Estes kriterlerine göre olası veya kesin sol ventriküler hipertrofiyi gösteren)
+
+    MaxHR: ulaşılan maksimum kalp atış hızı (60 ile 202 arasındaki sayısal değer)
+
+    ExerciseAngina: egzersize bağlı anjina (E: Evet, N: Hayır)
+
+    Oldpeak: oldpeak = ST (Alçalmada ölçülen sayısal değer)
+
+    ST_Slope: zirve egzersiz ST segmentinin eğimi (Up: yukarı eğimli, Down: düz, Aşağı: aşağı eğimli)
+
+    HeartDisease: çıktı sınıfı (1: kalp hastalığı, 0: Normal)
+        
+#### *AMAÇ: Veri incelemesi yapıldıktan sonra çokdeğişkenli analiz yöntemlerinin uygulanması*
+  </p>
+</div>
+
+---
+
+
+
+
+## 2. Kütüphanelerin Yüklenmesi
+<details>
+<summary>Kodu Göster / Gizle</summary>
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+library(tidyverse)
+library(tidyr)
+library(dendextend)
+library(knitr)
+library(gridExtra)
+library(GGally)
+library(ggplot2)
+library(VIM)
+library(corrplot)
+library(car)
+library(ResourceSelection)
+library(glmulti)
+library(tree)
+library(randomForest)
+library(ISLR)
+library(class)
+library(pROC)
+library(gtools)
+library(tidyverse)
+library(GGally)
+library(superml)
+library(caret)
+library(Boruta)
+library("stringr")
+library("tidyr")
+library("readr")
+library("here")
+library("skimr")
+library("janitor")
+library("lubridate")
+library(gridExtra)
+library(ggplot2)
+library(VIM)
+library(corrplot)
+library(car)
+library(ResourceSelection)
+library(glmulti)
+library(tree)
+library(randomForest)
+library(ISLR)
+library(class)
+library(pROC)
+library(gtools)
+library(tidyverse)
+library("scales")
+library("ggcorrplot")
+library("ggrepel")
+library("forcats")
+library("corrgram")
+library(tidymodels)
+library(baguette)
+library(discrim)
+library(bonsai)
+library(ResourceSelection)
+library(kableExtra)
+library(broom)
+library(dplyr)
+library(caret)
+library(tidyr)
+library(corrplot)
+library("Hmisc")
+library(psych)
+library(factoextra)
+library("DescTools")
+library(ResourceSelection)
+library(haven)
+library(effectsize)
+library(rstatix)
+library(ggpubr)
+library(biotools)
+library(PerformanceAnalytics)
+library(heplots)
+library(gplots)
+```
+
+---
+
+## 3. Veri Setini Yükleme
+<details>
+<summary>Kodu Göster / Gizle</summary>
+
+```{r,warning=FALSE,message=FALSE}
+df <- read.csv('/home/ilke/Downloads/heart (2).csv')
+```
+
+
+## 4. Veri Önişleme ve Keşifsel Veri Analizi
+
+### 4.1 Değişken TÜrlerinin Ayarlanması
+
+```{r,warning=FALSE,message=FALSE}
+kable(head(df), format = "html") %>%
+  kable_styling()
+```
+
+```{r}
+colnames(df)
+```
+
+```{r}
+str(df)
+```
+
+```{r}
+df <- df %>% mutate(
+  Sex = factor(Sex),
+  ChestPainType = factor(ChestPainType),
+  FastingBS = factor(FastingBS),
+  RestingECG = factor(RestingECG),
+  ExerciseAngina = factor(ExerciseAngina),
+  ST_Slope  = factor(ST_Slope),
+  HeartDisease = factor(HeartDisease)
+)
+```
+
+```{r}
+str(df)
+```
+
+### 4.2 Eksik Veri ve Aykırı Değer Sorununu Çözme
+
+    Veride eksik veri yoktur. Aykırı değerlere bakabilmek için sayısal değişkenlerin kutu grafiklerine bakıldı. 
+
+```{r}
+sum(is.na(df))
+colSums(is.na(df))
+```
+
+```{r}
+library(Hmisc)
+Hmisc::describe(df) 
+```
+
+
+```{r}
+par(mfrow=c(2, 3)) 
+
+# Age Boxplot
+boxplot(df$Age, main="Age", ylab="Age", col="skyblue")
+
+# RestingBP Boxplot
+boxplot(df$RestingBP, main="RestingBP", ylab="RestingBP", col="lightgreen")
+
+# Cholesterol Boxplot
+boxplot(df$Cholesterol, main="Cholesterol", ylab="Cholesterol", col="lightcoral")
+
+# MaxHR Boxplot
+boxplot(df$MaxHR, main="MaxHR", ylab="MaxHR", col="lightgoldenrodyellow")
+
+# Oldpeak Boxplot
+boxplot(df$Oldpeak, main="Oldpeak", ylab="Oldpeak", col="lightsteelblue")
+```
+
+
+```{r,warning=FALSE,message=FALSE}
+df$Age %>% summary()
+
+ggplot(data = df, aes(x = Age)) +
+  geom_histogram(color = "darkblue", fill = "lightblue") +
+  labs(title = "Age Histogram Plot", x = "Age", y = "Count") +
+  theme_minimal()
+```
+
+
+```{r}
+df$Cholesterol %>% summary()
+
+ggplot(data = df, aes(x = Cholesterol)) +
+  geom_histogram(color = "darkblue", fill = "lightblue") +
+  labs(title = "Serum Cholesterol Histogram Plot", x = "Serum Cholesterol", y = "Count") +
+  theme_minimal()
+```
+
+
+    Alt sınır için Q1 - 1.5 * IQR, üst sınır içinse Q3 + 1.5 * IQR değerini kullanarak değişken bazında aykırı değer oranlarını hesaplandı. %20’den fazla aykırı değere sahip değişken olmadığı için aykırı değerleri direkt silmek tercih edildi.
+
+```{r}
+
+outlier_ratio <- function(data, variable) {
+  Q1 <- quantile(data[[variable]], 0.25)
+  Q3 <- quantile(data[[variable]], 0.75)
+  IQR <- Q3 - Q1
+  
+  alt_sinir <- Q1 - 1.5 * IQR
+  ust_sinir <- Q3 + 1.5 * IQR
+  
+  aykiri <- sum(data[[variable]] < alt_sinir | data[[variable]] > ust_sinir)
+  oran <- aykiri / length(data[[variable]])
+  
+  return(oran)
+}
+
+
+degiskenler <- c("Age", "RestingBP", "Cholesterol", "MaxHR", "Oldpeak")
+aykiri_oranlar <- sapply(degiskenler, function(x) outlier_ratio(df, x))
+
+
+aykiri_oranlar
+```
+
+
+```{r}
+veri <- data.frame(degiskenler, aykiri_oranlar)
+
+
+grafik <- ggplot(data = veri, aes(x = degiskenler, y = aykiri_oranlar)) +
+  geom_bar(stat = "identity", fill = "skyblue", width = 0.5) +
+  labs(title = "Aykırı Değer Oranları", x = "Değişkenler", y = "Aykırı Değer Oranı") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+print(grafik)
+```
+
+```{r}
+outlier_detection <- function(data, variable) {
+  Q1 <- quantile(data[[variable]], 0.25)
+  Q3 <- quantile(data[[variable]], 0.75)
+  IQR <- Q3 - Q1
+  
+  alt_sinir <- Q1 - 1.5 * IQR
+  ust_sinir <- Q3 + 1.5 * IQR
+  
+  aykiri <- data[[variable]] < alt_sinir | data[[variable]] > ust_sinir
+  return(aykiri)
+}
+
+
+age_outliers <- outlier_detection(df, "Age")
+RestingBP_outliers <- outlier_detection(df, "RestingBP")
+Cholesterol_outliers <- outlier_detection(df, "Cholesterol")
+MaxHR_outliers <- outlier_detection(df, "MaxHR")
+Oldpeak_outliers <- outlier_detection(df, "Oldpeak")
+
+
+clean_df <- df[!age_outliers & !RestingBP_outliers & !Cholesterol_outliers & !MaxHR_outliers & !Oldpeak_outliers, ]
+
+
+cat("Aykırı değerleri içermeyen veri setinin boyutu:", dim(clean_df))
+```
+
+
+     
+```{r}
+write.csv(clean_df, file = "/home/ilke/Downloads/clean_heart.csv", row.names = FALSE)   #**düzenlenmiş veriyi kaydettim**
+```
+
+    Aykırı değerleri çıkarttıktan sonra sayısal değişkenlerin kutu grafikleri
+
+```{r}
+par(mfrow=c(2, 3)) 
+
+# Age Boxplot
+boxplot(clean_df$Age, main="Age", ylab="Age", col="skyblue")
+
+# RestingBP Boxplot
+boxplot(clean_df$RestingBP, main="RestingBP", ylab="RestingBP", col="lightgreen")
+
+# Cholesterol Boxplot
+boxplot(clean_df$Cholesterol, main="Cholesterol", ylab="Cholesterol", col="lightcoral")
+
+# MaxHR Boxplot
+boxplot(clean_df$MaxHR, main="MaxHR", ylab="MaxHR", col="lightgoldenrodyellow")
+
+# Oldpeak Boxplot
+boxplot(clean_df$Oldpeak, main="Oldpeak", ylab="Oldpeak", col="lightsteelblue")
+```
+
+
+### 4.3 veriye genel bakış
+
+```{r}
+head(df)
+```
+
+
+
+
+```{r}
+kable(df %>%
+group_by(HeartDisease) %>%
+  summarise(N = n())) %>%
+  kable_styling(full_width = F)
+```
+
+```{r}
+factor_columns <- sapply(df, is.factor) 
+factor_levels <- lapply(df[factor_columns], table)
+
+factor_summary_combined <- do.call(rbind, Map(as.data.frame, factor_levels))
+
+kable(factor_summary_combined, caption = "kategorik değişkenlerin seviye sayıları") %>%
+  kable_styling(full_width = F)
+```
+```{r, warning=FALSE, message=FALSE}
+barplot_var1 <- ggplot(clean_df, aes(x = as.factor(Sex), fill = as.factor(Sex))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Sex Distribution", x = "Sex", y = "Frequency", fill = "Sex") +
+  theme_minimal()
+
+barplot_var2 <- ggplot(clean_df, aes(x = as.factor(ChestPainType), fill = as.factor(ChestPainType))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Chest Pain Type Distribution", x = "Chest Pain Type", y = "Frequency", fill = "Chest Pain Type") +
+  theme_minimal()
+
+barplot_var3 <- ggplot(clean_df, aes(x = as.factor(FastingBS), fill = as.factor(FastingBS))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Fasting Blood Sugar Distribution", x = "Fasting BS", y = "Frequency", fill = "Fasting BS") +
+  theme_minimal()
+
+barplot_var4 <- ggplot(clean_df, aes(x = as.factor(RestingECG), fill = as.factor(RestingECG))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Resting ECG Distribution", x = "Resting ECG", y = "Frequency", fill = "Resting ECG") +
+  theme_minimal()
+
+library(gridExtra)
+multi_barplot <- grid.arrange(barplot_var1, barplot_var2, barplot_var3, barplot_var4, ncol = 2)
+
+print(multi_barplot)
+```
+```{r, message=FALSE, warning=FALSE}
+barplot_st_slope <- ggplot(clean_df, aes(x = as.factor(ST_Slope), fill = as.factor(ST_Slope))) +
+  geom_bar(position = "dodge") +
+  labs(title = "ST Slope Distribution", x = "ST Slope", y = "Frequency", fill = "ST Slope") +
+  theme_minimal()
+
+barplot_heart_disease <- ggplot(clean_df, aes(x = as.factor(HeartDisease), fill = as.factor(HeartDisease))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Heart Disease Distribution", x = "Heart Disease", y = "Frequency", fill = "Heart Disease") +
+  theme_minimal()
+
+barplot_exercise_angina <- ggplot(clean_df, aes(x = as.factor(ExerciseAngina), fill = as.factor(ExerciseAngina))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Exercise Angina Distribution", x = "Exercise Angina", y = "Frequency", fill = "Exercise Angina") +
+  theme_minimal()
+
+multi_barplot <- grid.arrange(barplot_st_slope, barplot_heart_disease, barplot_exercise_angina, ncol = 3)
+print(multi_barplot)
+```
+
+
+
+```{r}
+colnames(df)
+```
+
+```{r}
+a <- df %>%
+  group_by(HeartDisease) %>%
+  summarise(across(-c(Sex, ChestPainType, FastingBS, RestingECG, ExerciseAngina, ST_Slope), list(mean = mean, sd = sd)))
+kable(a,caption="Target değişkenine göre ort ve standart sapmalar", format = "html") %>%
+  kable_styling()
+```
+
+
+```{r}
+kable(summary(df), caption = "Veri Özeti") %>%
+  kable_styling(full_width = F)
+```
+
+
+
+
+```{r,message=FALSE}
+clean_df$Cholesterol %>% summary()
+
+ggplot(data = clean_df, aes(x = Cholesterol)) +
+  geom_histogram(color = "darkblue", fill = "lightblue") +
+  labs(title = "Serum Cholesterol Histogram Plot", x = "Serum Cholesterol", y = "Count") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(clean_df, aes(x = RestingBP, y = Cholesterol, color = as.factor(HeartDisease))) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Scatterplot of Resting BP and Cholesterol by Heart Disease Status", x = "Resting BP", y = "Cholesterol", color = "Heart Disease") +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot(clean_df, aes(x = Age, y = RestingBP, color = as.factor(HeartDisease), size = MaxHR)) +
+  geom_point(alpha = 0.7) +
+  labs(title = "Three-variable Scatterplot", x = "Age", y = "Resting BP", color = "Heart Disease", size = "Max HR") +
+  theme_minimal()
+```
+
+```{r, warning=FALSE, message=FALSE}
+ggpairs(clean_df[, c("Age", "RestingBP", "Cholesterol", "MaxHR", "HeartDisease")], 
+        aes(color = as.factor(HeartDisease)),
+        lower = list(continuous = "points"),  
+        upper = list(continuous = "blank"),  
+        diag = list(continuous = "barDiag"))  
+```
+```{r,warning=FALSE,message=FALSE}
+ggpairs(df[, c("Age", "RestingBP", "Cholesterol", "MaxHR", "HeartDisease", "Sex")], 
+        aes(color = Sex),
+        lower = list(continuous = "points"),  
+        upper = list(continuous = "blank"),  
+        diag = list(continuous = "barDiag"))
+```
+
