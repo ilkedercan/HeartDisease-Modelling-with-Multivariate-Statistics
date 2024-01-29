@@ -31,6 +31,7 @@ ST_Slope: zirve egzersiz ST segmentinin eğimi (Up: yukarı eğimli, Down: düz,
 
 HeartDisease: çıktı sınıfı (1: kalp hastalığı, 0: Normal)
 
+Önişleme & Keşifsel Veri Analizi çıktısı: https://rpubs.com/ilke/heartEDA
 
 ## Analiz Yöntemleri
 
