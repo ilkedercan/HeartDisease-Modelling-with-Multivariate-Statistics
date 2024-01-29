@@ -1,5 +1,6 @@
 # HeartDisease-Modelling-with-Multivariate-Statistics
 
+![Uploading image.png…]()
 
 
 ## Veri Seti Hikayesi
